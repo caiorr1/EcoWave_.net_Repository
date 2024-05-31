@@ -5,13 +5,12 @@ namespace EcoWave.Models
     public class Localizacao
     {
         [Key]
-        public int localizacao_id { get; set; }
-        [Required]
-        [MaxLength(100)]
-        public string nome_localizacao { get; set; }
-        public double? latitude { get; set; }
-        public double? longitude { get; set; }
+        public int LocalizacaoId { get; set; }
+        [Required, MaxLength(100)]
+        public string NomeLocalizacao { get; set; }
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
         [MaxLength(256)]
-        public string descricao { get; set; }
+        public string Descricao { get; set; }
     }
 }

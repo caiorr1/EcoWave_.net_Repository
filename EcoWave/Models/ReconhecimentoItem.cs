@@ -7,17 +7,16 @@ namespace EcoWave.Models
     public class ReconhecimentoItem
     {
         [Key]
-        public int reconhecimento_id { get; set; }
-        [Required]
-        [ForeignKey("Usuario")]
-        public int usuario_id { get; set; }
+        public int ReconhecimentoId { get; set; }
+        [Required, ForeignKey("Usuario")]
+        public int UsuarioId { get; set; }
         [MaxLength(256)]
-        public string url_imagem { get; set; }
+        public string UrlImagem { get; set; }
         [MaxLength(50)]
-        public string tipo_item { get; set; }
-        public DateTime data_reconhecimento { get; set; } = DateTime.Now;
+        public string TipoItem { get; set; }
+        public DateTime DataReconhecimento { get; set; } = DateTime.Now;
         [MaxLength(100)]
-        public string localizacao { get; set; }
+        public string Localizacao { get; set; }
 
         public Usuario Usuario { get; set; }
     }

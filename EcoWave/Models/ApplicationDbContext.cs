@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using EcoWave.Models;
+﻿using EcoWave.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcoWave.Data
 {
@@ -20,19 +20,22 @@ namespace EcoWave.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            // Configurando a chave composta para Amigo
             modelBuilder.Entity<Amigo>()
-                .HasKey(a => new { a.usuario_id, a.amigo_id });
+                .HasKey(a => new { a.UsuarioId, a.AmigoId });
 
             modelBuilder.Entity<Amigo>()
                 .HasOne(a => a.Usuario)
                 .WithMany(u => u.Amigos)
-                .HasForeignKey(a => a.usuario_id)
+                .HasForeignKey(a => a.UsuarioId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Amigo>()
                 .HasOne(a => a.AmigoUsuario)
                 .WithMany(u => u.AmigosDoUsuario)
-                .HasForeignKey(a => a.amigo_id)
+                .HasForeignKey(a => a.AmigoId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

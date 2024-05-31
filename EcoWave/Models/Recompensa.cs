@@ -7,16 +7,14 @@ namespace EcoWave.Models
     public class Recompensa
     {
         [Key]
-        public int recompensa_id { get; set; }
+        public int RecompensaId { get; set; }
+        [Required, ForeignKey("Usuario")]
+        public int UsuarioId { get; set; }
         [Required]
-        [ForeignKey("Usuario")]
-        public int usuario_id { get; set; }
-        [Required]
-        public int pontos { get; set; }
-        [Required]
-        [MaxLength(50)]
-        public string tipo_recompensa { get; set; }
-        public DateTime? data_resgate { get; set; }
+        public int Pontos { get; set; }
+        [Required, MaxLength(50)]
+        public string TipoRecompensa { get; set; }
+        public DateTime? DataResgate { get; set; }
 
         public Usuario Usuario { get; set; }
     }

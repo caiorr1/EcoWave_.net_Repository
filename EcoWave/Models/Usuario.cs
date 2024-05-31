@@ -7,21 +7,18 @@ namespace EcoWave.Models
     public class Usuario
     {
         [Key]
-        public int usuario_id { get; set; }
-        [Required]
-        [MaxLength(50)]
-        public string nome_usuario { get; set; }
-        [Required]
-        [MaxLength(256)]
-        public string senha_hash { get; set; }
-        [Required]
+        public int UsuarioId { get; set; }
+        [Required, MaxLength(50)]
+        public string NomeUsuario { get; set; }
+        [Required, MaxLength(256)]
+        public string SenhaHash { get; set; }
+        [Required, MaxLength(100)]
+        public string Email { get; set; }
+        public DateTime DataRegistro { get; set; } = DateTime.Now;
         [MaxLength(100)]
-        public string email { get; set; }
-        public DateTime data_registro { get; set; } = DateTime.Now;
-        [MaxLength(100)]
-        public string localizacao { get; set; }
+        public string Localizacao { get; set; }
         [MaxLength(256)]
-        public string foto_perfil { get; set; }
+        public string FotoPerfil { get; set; }
 
         public ICollection<ItemReciclado> ItensReciclados { get; set; }
         public ICollection<Recompensa> Recompensas { get; set; }

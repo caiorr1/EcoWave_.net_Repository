@@ -7,18 +7,16 @@ namespace EcoWave.Models
     public class ItemReciclado
     {
         [Key]
-        public int item_id { get; set; }
-        [Required]
-        [ForeignKey("Usuario")]
-        public int usuario_id { get; set; }
-        [Required]
-        [MaxLength(50)]
-        public string tipo_item { get; set; }
-        public DateTime data_coleta { get; set; } = DateTime.Now;
+        public int ItemId { get; set; }
+        [Required, ForeignKey("Usuario")]
+        public int UsuarioId { get; set; }
+        [Required, MaxLength(50)]
+        public string TipoItem { get; set; }
+        public DateTime DataColeta { get; set; } = DateTime.Now;
         [MaxLength(100)]
-        public string localizacao { get; set; }
+        public string Localizacao { get; set; }
         [Required]
-        public int quantidade { get; set; }
+        public int Quantidade { get; set; }
 
         public Usuario Usuario { get; set; }
     }
