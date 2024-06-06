@@ -10,7 +10,7 @@ namespace EcoWave.Models
 
         [Required, ForeignKey("Usuario")]
         public int UsuarioId { get; set; }
-        public virtual Usuario Usuario { get; set; }
+        public virtual Usuario? Usuario { get; set; }
 
         [Required, MaxLength(50)]
         public string NomeConfiguracao { get; set; }

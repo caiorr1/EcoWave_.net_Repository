@@ -24,6 +24,6 @@ namespace EcoWave.Models
         [Required]
         public int Quantidade { get; set; }
 
-        public virtual Usuario Usuario { get; set; }
+        public virtual Usuario? Usuario { get; set; }
     }
 }
