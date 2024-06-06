@@ -12,7 +12,7 @@ using Oracle.EntityFrameworkCore.Metadata;
 namespace EcoWave.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240606162541_UpdateSchema")]
+    [Migration("20240606172039_UpdateSchema")]
     partial class UpdateSchema
     {
         /// <inheritdoc />
@@ -28,10 +28,12 @@ namespace EcoWave.Migrations
             modelBuilder.Entity("EcoWave.Models.Amigo", b =>
                 {
                     b.Property<int>("UsuarioId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnOrder(0);
 
                     b.Property<int>("AmigoId")
-                        .HasColumnType("NUMBER(10)");
+                        .HasColumnType("NUMBER(10)")
+                        .HasColumnOrder(1);
 
                     b.Property<DateTime>("DataAmizade")
                         .HasColumnType("TIMESTAMP(7)");

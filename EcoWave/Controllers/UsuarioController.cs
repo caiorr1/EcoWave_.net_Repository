@@ -1,25 +1,25 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using EcoWave.Models;
-using EcoWave.Repositories;
+using EcoWave.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcoWave.Controllers
 {
     public class UsuarioController : Controller
     {
-        private readonly IRepository<Usuario> _repository;
+        private readonly ApplicationDbContext _context;
 
-        public UsuarioController(IRepository<Usuario> repository)
+        public UsuarioController(ApplicationDbContext context)
         {
-            _repository = repository;
+            _context = context;
         }
 
         // GET: Usuario
         public async Task<IActionResult> Index()
         {
-            var usuarios = await _repository.GetAll();
-            return View(usuarios);
+            return View(await _context.Usuarios.ToListAsync());
         }
 
         // GET: Usuario/Details/5
@@ -30,7 +30,8 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var usuario = await _repository.GetById(id.Value);
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(m => m.UsuarioId == id);
             if (usuario == null)
             {
                 return NotFound();
@@ -50,9 +51,20 @@ namespace EcoWave.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UsuarioId,NomeUsuario,SenhaHash,Email,DataRegistro,Localizacao,FotoPerfil")] Usuario usuario)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    // Use um breakpoint aqui ou registre o erro em logs
+                    System.Diagnostics.Debug.WriteLine(error.ErrorMessage);
+                }
+            }
+
             if (ModelState.IsValid)
             {
-                await _repository.Add(usuario);
+                _context.Add(usuario);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(usuario);
@@ -66,7 +78,7 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var usuario = await _repository.GetById(id.Value);
+            var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario == null)
             {
                 return NotFound();
@@ -88,11 +100,12 @@ namespace EcoWave.Controllers
             {
                 try
                 {
-                    await _repository.Update(usuario);
+                    _context.Update(usuario);
+                    await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await UsuarioExists(usuario.UsuarioId))
+                    if (!UsuarioExists(usuario.UsuarioId))
                     {
                         return NotFound();
                     }
@@ -114,7 +127,8 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var usuario = await _repository.GetById(id.Value);
+            var usuario = await _context.Usuarios
+                .FirstOrDefaultAsync(m => m.UsuarioId == id);
             if (usuario == null)
             {
                 return NotFound();
@@ -128,18 +142,19 @@ namespace EcoWave.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var usuario = await _repository.GetById(id);
+            var usuario = await _context.Usuarios.FindAsync(id);
             if (usuario != null)
             {
-                await _repository.Delete(id);
+                _context.Usuarios.Remove(usuario);
+                await _context.SaveChangesAsync();
             }
+
             return RedirectToAction(nameof(Index));
         }
 
-        private async Task<bool> UsuarioExists(int id)
+        private bool UsuarioExists(int id)
         {
-            var usuario = await _repository.GetById(id);
-            return usuario != null;
+            return _context.Usuarios.Any(e => e.UsuarioId == id);
         }
     }
 }

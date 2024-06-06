@@ -9,16 +9,13 @@ namespace EcoWave.Models
         [Key]
         public int ItemId { get; set; }
 
-        [Required]
+        [Required, ForeignKey("Usuario")]
         public int UsuarioId { get; set; }
 
-        [ForeignKey("UsuarioId")]
-        public Usuario Usuario { get; set; }
-
-        [Required]
-        [MaxLength(50)]
+        [Required, MaxLength(50)]
         public string TipoItem { get; set; }
 
+        [Required]
         public DateTime DataColeta { get; set; }
 
         [MaxLength(100)]
@@ -26,5 +23,7 @@ namespace EcoWave.Models
 
         [Required]
         public int Quantidade { get; set; }
+
+        public virtual Usuario Usuario { get; set; }
     }
 }

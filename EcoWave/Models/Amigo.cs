@@ -1,14 +1,21 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EcoWave.Models
 {
     public class Amigo
     {
+        [Key, Column(Order = 0)]
+        [ForeignKey("Usuario")]
         public int UsuarioId { get; set; }
-        public int AmigoId { get; set; }
-        public DateTime DataAmizade { get; set; } = DateTime.Now;
+        public virtual Usuario Usuario { get; set; }
 
-        public Usuario Usuario { get; set; }
-        public Usuario AmigoUsuario { get; set; }
+        [Key, Column(Order = 1)]
+        [ForeignKey("AmigoUsuario")]
+        public int AmigoId { get; set; }
+        public virtual Usuario AmigoUsuario { get; set; }
+
+        public DateTime DataAmizade { get; set; }
     }
 }

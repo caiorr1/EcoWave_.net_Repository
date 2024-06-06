@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using EcoWave.Models;
@@ -46,7 +47,7 @@ namespace EcoWave.Controllers
         public async Task<IActionResult> Create()
         {
             var usuarios = await _usuarioRepository.GetAll();
-            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email");
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "NomeUsuario");
             return View();
         }
 
@@ -55,6 +56,15 @@ namespace EcoWave.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ItemId,UsuarioId,TipoItem,DataColeta,Localizacao,Quantidade")] ItemReciclado itemReciclado)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    System.Diagnostics.Debug.WriteLine(error.ErrorMessage);
+                }
+            }
+
             if (ModelState.IsValid)
             {
                 await _repository.Add(itemReciclado);
@@ -62,7 +72,7 @@ namespace EcoWave.Controllers
             }
 
             var usuarios = await _usuarioRepository.GetAll();
-            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email", itemReciclado.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "NomeUsuario", itemReciclado.UsuarioId);
             return View(itemReciclado);
         }
 
@@ -81,7 +91,7 @@ namespace EcoWave.Controllers
             }
 
             var usuarios = await _usuarioRepository.GetAll();
-            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email", itemReciclado.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "NomeUsuario", itemReciclado.UsuarioId);
             return View(itemReciclado);
         }
 
@@ -116,7 +126,7 @@ namespace EcoWave.Controllers
             }
 
             var usuarios = await _usuarioRepository.GetAll();
-            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email", itemReciclado.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "NomeUsuario", itemReciclado.UsuarioId);
             return View(itemReciclado);
         }
 

@@ -22,6 +22,7 @@ namespace EcoWave.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            // Configurando a chave composta para Amigo
             modelBuilder.Entity<Amigo>()
                 .HasKey(a => new { a.UsuarioId, a.AmigoId });
 
@@ -47,13 +48,11 @@ namespace EcoWave.Data
                 .WithMany(u => u.ItensReciclados)
                 .HasForeignKey(i => i.UsuarioId);
 
-            
             modelBuilder.Entity<ReconhecimentoItem>()
                 .HasOne(ri => ri.Usuario)
                 .WithMany(u => u.ReconhecimentoItens)
                 .HasForeignKey(ri => ri.UsuarioId);
 
-            
             modelBuilder.Entity<Configuracao>()
                 .HasOne(c => c.Usuario)
                 .WithMany(u => u.Configuracoes)
