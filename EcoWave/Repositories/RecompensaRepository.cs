@@ -1,8 +1,8 @@
-﻿using EcoWave.Data;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using EcoWave.Data;
 using EcoWave.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace EcoWave.Repositories
 {
@@ -17,12 +17,12 @@ namespace EcoWave.Repositories
 
         public async Task<IEnumerable<Recompensa>> GetAll()
         {
-            return await _context.Recompensas.ToListAsync();
+            return await _context.Recompensas.Include(r => r.Usuario).ToListAsync();
         }
 
         public async Task<Recompensa> GetById(int id)
         {
-            return await _context.Recompensas.FindAsync(id);
+            return await _context.Recompensas.Include(r => r.Usuario).FirstOrDefaultAsync(r => r.RecompensaId == id);
         }
 
         public async Task Add(Recompensa entity)
@@ -39,9 +39,12 @@ namespace EcoWave.Repositories
 
         public async Task Delete(int id)
         {
-            var entity = await _context.Recompensas.FindAsync(id);
-            _context.Recompensas.Remove(entity);
-            await _context.SaveChangesAsync();
+            var entity = await GetById(id);
+            if (entity != null)
+            {
+                _context.Recompensas.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

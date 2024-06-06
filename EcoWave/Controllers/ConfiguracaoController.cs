@@ -1,29 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using EcoWave.Data;
 using EcoWave.Models;
+using EcoWave.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcoWave.Controllers
 {
     public class ConfiguracaoController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Configuracao> _repository;
+        private readonly IRepository<Usuario> _usuarioRepository;
 
-        public ConfiguracaoController(ApplicationDbContext context)
+        public ConfiguracaoController(IRepository<Configuracao> repository, IRepository<Usuario> usuarioRepository)
         {
-            _context = context;
+            _repository = repository;
+            _usuarioRepository = usuarioRepository;
         }
 
         // GET: Configuracao
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Configuracoes.Include(c => c.Usuario);
-            return View(await applicationDbContext.ToListAsync());
+            var configuracoes = await _repository.GetAll();
+            return View(configuracoes);
         }
 
         // GET: Configuracao/Details/5
@@ -34,9 +33,7 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var configuracao = await _context.Configuracoes
-                .Include(c => c.Usuario)
-                .FirstOrDefaultAsync(m => m.ConfiguracaoId == id);
+            var configuracao = await _repository.GetById(id.Value);
             if (configuracao == null)
             {
                 return NotFound();
@@ -46,26 +43,26 @@ namespace EcoWave.Controllers
         }
 
         // GET: Configuracao/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email");
+            var usuarios = await _usuarioRepository.GetAll();
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email");
             return View();
         }
 
         // POST: Configuracao/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ConfiguracaoId,UsuarioId,NomeConfiguracao,ValorConfiguracao")] Configuracao configuracao)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(configuracao);
-                await _context.SaveChangesAsync();
+                await _repository.Add(configuracao);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email", configuracao.UsuarioId);
+
+            var usuarios = await _usuarioRepository.GetAll();
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email", configuracao.UsuarioId);
             return View(configuracao);
         }
 
@@ -77,18 +74,18 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var configuracao = await _context.Configuracoes.FindAsync(id);
+            var configuracao = await _repository.GetById(id.Value);
             if (configuracao == null)
             {
                 return NotFound();
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email", configuracao.UsuarioId);
+
+            var usuarios = await _usuarioRepository.GetAll();
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email", configuracao.UsuarioId);
             return View(configuracao);
         }
 
         // POST: Configuracao/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ConfiguracaoId,UsuarioId,NomeConfiguracao,ValorConfiguracao")] Configuracao configuracao)
@@ -102,12 +99,11 @@ namespace EcoWave.Controllers
             {
                 try
                 {
-                    _context.Update(configuracao);
-                    await _context.SaveChangesAsync();
+                    await _repository.Update(configuracao);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ConfiguracaoExists(configuracao.ConfiguracaoId))
+                    if (!await ConfiguracaoExists(configuracao.ConfiguracaoId))
                     {
                         return NotFound();
                     }
@@ -118,7 +114,9 @@ namespace EcoWave.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email", configuracao.UsuarioId);
+
+            var usuarios = await _usuarioRepository.GetAll();
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email", configuracao.UsuarioId);
             return View(configuracao);
         }
 
@@ -130,9 +128,7 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var configuracao = await _context.Configuracoes
-                .Include(c => c.Usuario)
-                .FirstOrDefaultAsync(m => m.ConfiguracaoId == id);
+            var configuracao = await _repository.GetById(id.Value);
             if (configuracao == null)
             {
                 return NotFound();
@@ -146,19 +142,18 @@ namespace EcoWave.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var configuracao = await _context.Configuracoes.FindAsync(id);
+            var configuracao = await _repository.GetById(id);
             if (configuracao != null)
             {
-                _context.Configuracoes.Remove(configuracao);
+                await _repository.Delete(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ConfiguracaoExists(int id)
+        private async Task<bool> ConfiguracaoExists(int id)
         {
-            return _context.Configuracoes.Any(e => e.ConfiguracaoId == id);
+            var configuracao = await _repository.GetById(id);
+            return configuracao != null;
         }
     }
 }

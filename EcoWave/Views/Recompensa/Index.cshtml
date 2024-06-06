@@ -1,0 +1,54 @@
+﻿@model IEnumerable<EcoWave.Models.Recompensa>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Pontos)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.TipoRecompensa)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DataResgate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Usuario)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Pontos)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TipoRecompensa)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DataResgate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Usuario.Email)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.RecompensaId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.RecompensaId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.RecompensaId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

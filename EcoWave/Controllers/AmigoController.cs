@@ -1,29 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using EcoWave.Data;
 using EcoWave.Models;
+using EcoWave.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcoWave.Controllers
 {
     public class AmigoController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Amigo> _repository;
+        private readonly IRepository<Usuario> _usuarioRepository;
 
-        public AmigoController(ApplicationDbContext context)
+        public AmigoController(IRepository<Amigo> repository, IRepository<Usuario> usuarioRepository)
         {
-            _context = context;
+            _repository = repository;
+            _usuarioRepository = usuarioRepository;
         }
 
         // GET: Amigo
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Amigos.Include(a => a.AmigoUsuario).Include(a => a.Usuario);
-            return View(await applicationDbContext.ToListAsync());
+            var amigos = await _repository.GetAll();
+            return View(amigos);
         }
 
         // GET: Amigo/Details/5
@@ -34,10 +33,7 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var amigo = await _context.Amigos
-                .Include(a => a.AmigoUsuario)
-                .Include(a => a.Usuario)
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
+            var amigo = await _repository.GetById(id.Value);
             if (amigo == null)
             {
                 return NotFound();
@@ -47,28 +43,28 @@ namespace EcoWave.Controllers
         }
 
         // GET: Amigo/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["AmigoId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email");
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email");
+            var usuarios = await _usuarioRepository.GetAll();
+            ViewData["AmigoId"] = new SelectList(usuarios, "UsuarioId", "Email");
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email");
             return View();
         }
 
         // POST: Amigo/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UsuarioId,AmigoId,DataAmizade")] Amigo amigo)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(amigo);
-                await _context.SaveChangesAsync();
+                await _repository.Add(amigo);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AmigoId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email", amigo.AmigoId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email", amigo.UsuarioId);
+
+            var usuarios = await _usuarioRepository.GetAll();
+            ViewData["AmigoId"] = new SelectList(usuarios, "UsuarioId", "Email", amigo.AmigoId);
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email", amigo.UsuarioId);
             return View(amigo);
         }
 
@@ -80,19 +76,19 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var amigo = await _context.Amigos.FindAsync(id);
+            var amigo = await _repository.GetById(id.Value);
             if (amigo == null)
             {
                 return NotFound();
             }
-            ViewData["AmigoId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email", amigo.AmigoId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email", amigo.UsuarioId);
+
+            var usuarios = await _usuarioRepository.GetAll();
+            ViewData["AmigoId"] = new SelectList(usuarios, "UsuarioId", "Email", amigo.AmigoId);
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email", amigo.UsuarioId);
             return View(amigo);
         }
 
         // POST: Amigo/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("UsuarioId,AmigoId,DataAmizade")] Amigo amigo)
@@ -106,12 +102,11 @@ namespace EcoWave.Controllers
             {
                 try
                 {
-                    _context.Update(amigo);
-                    await _context.SaveChangesAsync();
+                    await _repository.Update(amigo);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AmigoExists(amigo.UsuarioId))
+                    if (!await AmigoExists(amigo.UsuarioId))
                     {
                         return NotFound();
                     }
@@ -122,8 +117,10 @@ namespace EcoWave.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["AmigoId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email", amigo.AmigoId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Email", amigo.UsuarioId);
+
+            var usuarios = await _usuarioRepository.GetAll();
+            ViewData["AmigoId"] = new SelectList(usuarios, "UsuarioId", "Email", amigo.AmigoId);
+            ViewData["UsuarioId"] = new SelectList(usuarios, "UsuarioId", "Email", amigo.UsuarioId);
             return View(amigo);
         }
 
@@ -135,10 +132,7 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var amigo = await _context.Amigos
-                .Include(a => a.AmigoUsuario)
-                .Include(a => a.Usuario)
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
+            var amigo = await _repository.GetById(id.Value);
             if (amigo == null)
             {
                 return NotFound();
@@ -152,19 +146,18 @@ namespace EcoWave.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var amigo = await _context.Amigos.FindAsync(id);
+            var amigo = await _repository.GetById(id);
             if (amigo != null)
             {
-                _context.Amigos.Remove(amigo);
+                await _repository.Delete(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AmigoExists(int id)
+        private async Task<bool> AmigoExists(int id)
         {
-            return _context.Amigos.Any(e => e.UsuarioId == id);
+            var amigo = await _repository.GetById(id);
+            return amigo != null;
         }
     }
 }

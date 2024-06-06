@@ -42,156 +42,156 @@ namespace EcoWave.Migrations
 
             modelBuilder.Entity("EcoWave.Models.Configuracao", b =>
                 {
-                    b.Property<int>("configuracao_id")
+                    b.Property<int>("ConfiguracaoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(10)");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("configuracao_id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ConfiguracaoId"));
 
-                    b.Property<string>("nome_configuracao")
+                    b.Property<string>("NomeConfiguracao")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)");
 
-                    b.Property<int>("usuario_id")
+                    b.Property<int>("UsuarioId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<string>("valor_configuracao")
+                    b.Property<string>("ValorConfiguracao")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("NVARCHAR2(100)");
 
-                    b.HasKey("configuracao_id");
+                    b.HasKey("ConfiguracaoId");
 
-                    b.HasIndex("usuario_id");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Configuracoes");
                 });
 
             modelBuilder.Entity("EcoWave.Models.ItemReciclado", b =>
                 {
-                    b.Property<int>("item_id")
+                    b.Property<int>("ItemId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(10)");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("item_id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemId"));
 
-                    b.Property<DateTime>("data_coleta")
+                    b.Property<DateTime>("DataColeta")
                         .HasColumnType("TIMESTAMP(7)");
 
-                    b.Property<string>("localizacao")
+                    b.Property<string>("Localizacao")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("NVARCHAR2(100)");
 
-                    b.Property<int>("quantidade")
+                    b.Property<int>("Quantidade")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<string>("tipo_item")
+                    b.Property<string>("TipoItem")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)");
 
-                    b.Property<int>("usuario_id")
+                    b.Property<int>("UsuarioId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.HasKey("item_id");
+                    b.HasKey("ItemId");
 
-                    b.HasIndex("usuario_id");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("ItensReciclados");
                 });
 
             modelBuilder.Entity("EcoWave.Models.Localizacao", b =>
                 {
-                    b.Property<int>("localizacao_id")
+                    b.Property<int>("LocalizacaoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(10)");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("localizacao_id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LocalizacaoId"));
 
-                    b.Property<string>("descricao")
+                    b.Property<string>("Descricao")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("NVARCHAR2(256)");
 
-                    b.Property<double?>("latitude")
+                    b.Property<double?>("Latitude")
                         .HasColumnType("BINARY_DOUBLE");
 
-                    b.Property<double?>("longitude")
+                    b.Property<double?>("Longitude")
                         .HasColumnType("BINARY_DOUBLE");
 
-                    b.Property<string>("nome_localizacao")
+                    b.Property<string>("NomeLocalizacao")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("NVARCHAR2(100)");
 
-                    b.HasKey("localizacao_id");
+                    b.HasKey("LocalizacaoId");
 
                     b.ToTable("Localizacoes");
                 });
 
             modelBuilder.Entity("EcoWave.Models.Recompensa", b =>
                 {
-                    b.Property<int>("recompensa_id")
+                    b.Property<int>("RecompensaId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(10)");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("recompensa_id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RecompensaId"));
 
-                    b.Property<DateTime?>("data_resgate")
+                    b.Property<DateTime?>("DataResgate")
                         .HasColumnType("TIMESTAMP(7)");
 
-                    b.Property<int>("pontos")
+                    b.Property<int>("Pontos")
                         .HasColumnType("NUMBER(10)");
 
-                    b.Property<string>("tipo_recompensa")
+                    b.Property<string>("TipoRecompensa")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)");
 
-                    b.Property<int>("usuario_id")
+                    b.Property<int>("UsuarioId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.HasKey("recompensa_id");
+                    b.HasKey("RecompensaId");
 
-                    b.HasIndex("usuario_id");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("Recompensas");
                 });
 
             modelBuilder.Entity("EcoWave.Models.ReconhecimentoItem", b =>
                 {
-                    b.Property<int>("reconhecimento_id")
+                    b.Property<int>("ReconhecimentoId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("NUMBER(10)");
 
-                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("reconhecimento_id"));
+                    OraclePropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReconhecimentoId"));
 
-                    b.Property<DateTime>("data_reconhecimento")
+                    b.Property<DateTime>("DataReconhecimento")
                         .HasColumnType("TIMESTAMP(7)");
 
-                    b.Property<string>("localizacao")
+                    b.Property<string>("Localizacao")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("NVARCHAR2(100)");
 
-                    b.Property<string>("tipo_item")
+                    b.Property<string>("TipoItem")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("NVARCHAR2(50)");
 
-                    b.Property<string>("url_imagem")
+                    b.Property<string>("UrlImagem")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("NVARCHAR2(256)");
 
-                    b.Property<int>("usuario_id")
+                    b.Property<int>("UsuarioId")
                         .HasColumnType("NUMBER(10)");
 
-                    b.HasKey("reconhecimento_id");
+                    b.HasKey("ReconhecimentoId");
 
-                    b.HasIndex("usuario_id");
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("ReconhecimentoItens");
                 });
@@ -260,7 +260,7 @@ namespace EcoWave.Migrations
                 {
                     b.HasOne("EcoWave.Models.Usuario", "Usuario")
                         .WithMany("Configuracoes")
-                        .HasForeignKey("usuario_id")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -271,7 +271,7 @@ namespace EcoWave.Migrations
                 {
                     b.HasOne("EcoWave.Models.Usuario", "Usuario")
                         .WithMany("ItensReciclados")
-                        .HasForeignKey("usuario_id")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -282,7 +282,7 @@ namespace EcoWave.Migrations
                 {
                     b.HasOne("EcoWave.Models.Usuario", "Usuario")
                         .WithMany("Recompensas")
-                        .HasForeignKey("usuario_id")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -293,7 +293,7 @@ namespace EcoWave.Migrations
                 {
                     b.HasOne("EcoWave.Models.Usuario", "Usuario")
                         .WithMany("ReconhecimentoItens")
-                        .HasForeignKey("usuario_id")
+                        .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

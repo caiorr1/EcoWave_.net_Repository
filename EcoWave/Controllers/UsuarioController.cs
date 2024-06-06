@@ -1,28 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using EcoWave.Data;
 using EcoWave.Models;
+using EcoWave.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace EcoWave.Controllers
 {
     public class UsuarioController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRepository<Usuario> _repository;
 
-        public UsuarioController(ApplicationDbContext context)
+        public UsuarioController(IRepository<Usuario> repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: Usuario
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Usuarios.ToListAsync());
+            var usuarios = await _repository.GetAll();
+            return View(usuarios);
         }
 
         // GET: Usuario/Details/5
@@ -33,8 +30,7 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
+            var usuario = await _repository.GetById(id.Value);
             if (usuario == null)
             {
                 return NotFound();
@@ -50,16 +46,13 @@ namespace EcoWave.Controllers
         }
 
         // POST: Usuario/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UsuarioId,NomeUsuario,SenhaHash,Email,DataRegistro,Localizacao,FotoPerfil")] Usuario usuario)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(usuario);
-                await _context.SaveChangesAsync();
+                await _repository.Add(usuario);
                 return RedirectToAction(nameof(Index));
             }
             return View(usuario);
@@ -73,7 +66,7 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = await _repository.GetById(id.Value);
             if (usuario == null)
             {
                 return NotFound();
@@ -82,8 +75,6 @@ namespace EcoWave.Controllers
         }
 
         // POST: Usuario/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("UsuarioId,NomeUsuario,SenhaHash,Email,DataRegistro,Localizacao,FotoPerfil")] Usuario usuario)
@@ -97,12 +88,11 @@ namespace EcoWave.Controllers
             {
                 try
                 {
-                    _context.Update(usuario);
-                    await _context.SaveChangesAsync();
+                    await _repository.Update(usuario);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!UsuarioExists(usuario.UsuarioId))
+                    if (!await UsuarioExists(usuario.UsuarioId))
                     {
                         return NotFound();
                     }
@@ -124,8 +114,7 @@ namespace EcoWave.Controllers
                 return NotFound();
             }
 
-            var usuario = await _context.Usuarios
-                .FirstOrDefaultAsync(m => m.UsuarioId == id);
+            var usuario = await _repository.GetById(id.Value);
             if (usuario == null)
             {
                 return NotFound();
@@ -139,19 +128,18 @@ namespace EcoWave.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = await _repository.GetById(id);
             if (usuario != null)
             {
-                _context.Usuarios.Remove(usuario);
+                await _repository.Delete(id);
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UsuarioExists(int id)
+        private async Task<bool> UsuarioExists(int id)
         {
-            return _context.Usuarios.Any(e => e.UsuarioId == id);
+            var usuario = await _repository.GetById(id);
+            return usuario != null;
         }
     }
 }
